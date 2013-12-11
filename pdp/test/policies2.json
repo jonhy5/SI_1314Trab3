@@ -1,0 +1,46 @@
+{
+    "roles": {
+        "admin": {
+            "description": "System administrator",
+            "juniorRoles": ["auth"]
+        },
+        "auth": {
+            "description": "Regular registered user",
+            "juniorRoles": ["visitor"]
+        },
+        "visitor": {
+            "description": "Visitor",
+            "juniorRoles": []
+        }
+    },
+    "users": {
+        "ana": {"name": "Ana Maria"},
+        "joana": {"name": "Joana Maria"},
+        "mariana": {"name": "Mariana Maria"},
+        "patricia": {"name": "Patrícia Maria"},
+        "unknown": {"name": "An unknown user"}
+    },
+    "permissions": {
+        "authPages": {
+            "resources": [{"resource": "auth.js", "operation": "GET"}]
+        },
+        "adminPages": {
+            "resources": [{"resource": "addUsers.js", "operation": "GET"}, {"resource": "addUsers.js", "operation": "POST"}]
+        },
+        "registerPage": {
+            "resources": [{"resource": "index.js", "operation": "GET"}, {"resource": "profile.js", "operation": "GET"}]
+        }
+    },
+    "userAssignments": {
+        "ana": ["admin"],
+        "joana": ["admin"],
+        "mariana": ["auth"],
+        "patricia": ["auth"],
+        "unknown": ["visitor"]
+    },
+    "permissionAssignments": {
+        "admin": ["adminPages"],
+        "auth": ["authPages"],
+        "visitor": ["registerPage"]
+    }
+}
