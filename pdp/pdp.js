@@ -61,13 +61,13 @@ function extend(obj1, obj2){
 
 function extractUsers(file){
     users = file.users;
-
     for(userId in users){
         users[userId].resources = {};
         for(i in userAssignments[userId]){
             var roleId= userAssignments[userId][i];
             for(j in permissionAssignments[roleId]){
                 var permissionId = permissionAssignments[roleId][j];
+                //console.log(userId + ' ' + roleId + ' ' + permissionId);
                 extend(users[userId].resources, permissions[permissionId].resources);
             }
         }
@@ -88,12 +88,15 @@ function extractUsers(file){
 module.exports.loadPolicy = function(path){
     var file = JSON.parse(fs.readFileSync(path)); // Sync because we need all policies loaded b4 continuing.
 
+
     // extraction
     roles = file.roles;
     permissions = file.permissions;
     userAssignments = file.userAssignments;
     permissionAssignments = extractPermissionAssignments(file);
     users = extractUsers(file);
+
+    console.log("Policies file loaded.");
 };
 
 /**

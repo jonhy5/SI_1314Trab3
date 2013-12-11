@@ -1,0 +1,61 @@
+{
+    "roles": {
+        "admin": {
+            "description": "System administrator",
+            "juniorRoles": ["auth"]
+        },
+        "auth": {
+            "description": "Regular registered user",
+            "juniorRoles": ["visitor"]
+        },
+        "visitor": {
+            "description": "Visitor",
+            "juniorRoles": []
+        }
+    },
+    "users": {
+        "ana": {"name": "Ana Maria"},
+        "joana": {"name": "Joana Maria"},
+        "mariana": {"name": "Mariana Maria"},
+        "patricia": {"name": "Patrícia Maria"},
+        "unknown": {"name": "An unknown user"}
+    },
+    "permissions": {
+        "authPages": {
+            "description": "Autheticated resources",
+            "resources": {
+                "/index": ["GET"],
+                "/profile": ["GET"]
+            }
+        },
+        "adminPages": {
+            "resources": {
+                "/GetUser": ["GET"],
+                "/addUsers": ["GET", "POST"]
+
+            }
+        },
+        "registerPage": {
+            "resources": {
+                "/auth": ["GET"]
+            }
+        },
+        "unregisteredPages": {
+            "resources": {
+                "/echo": ["GET"]
+            }
+        }
+    },
+    "userAssignments": {
+        "ana": ["admin"],
+        "joana": ["admin"],
+        "mariana": ["auth"],
+        "patricia": ["auth"],
+        "unknown": ["visitor"]
+    },
+    "permissionAssignments": {
+        "admin": ["adminPages"],
+        "auth": ["authPages"],
+        "visitor": ["registerPage", "unregisteredPages"]
+    }
+}

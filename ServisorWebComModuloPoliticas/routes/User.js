@@ -10,6 +10,6 @@ module.exports.InsertUser = function(req,res){
 
 
 module.exports.GetUser = function(req,res){
-
+    res.send('You are ' + req.query.name);
 
 }
