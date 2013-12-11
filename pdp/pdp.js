@@ -29,41 +29,9 @@ var roles,
     };
  */
 
-function extractIndexedRoles(file){
-    var roles = {};
-    for (k in file.roles){
-        var role = file.roles[k];
-        roles[role.id] = role;
-    }
-    return roles;
-}
-function extractIndexedUsers(file){
-    var users = {};
-    for (k in file.users){
-        var user = file.users[k];
-        users[user.id] = user;
-    }
-    return users;
-}
-function extractIndexedPermissions(file){
-    var permissions = {};
-    for (k in file.permissions){
-        var permission = file.permissions[k];
-        permissions[permission.id] = permission;
-    }
-    return permissions;
-}
-function extractIndexedUserAssignments(file){
-    var userAssignments = {};
-    for(k in file.userAssignments){
-        var userAssignment = file.userAssignments[k];
-        userAssignments[userAssignment.user] = userAssignment;
-    }
-    return userAssignments;
-}
-function extractIndexedPermissionAssignments(file, roles){
+function extractPermissionAssignments(file){
     function inheritedPermissions(roleId){
-        var permissions = permissionAssignments[roleId].permissions || [];
+        var permissions = permissionAssignments[roleId] || [];
         for(id in roles[roleId].juniorRoles){
             var juniorRole = roles[roleId].juniorRoles[id];
             if(permissionAssignments[juniorRole] != undefined){
@@ -74,18 +42,38 @@ function extractIndexedPermissionAssignments(file, roles){
     }
 
     // permission assignments from file
-    var permissionAssignments = {};
-    for(k in file.permissionAssignments){
-        var permissionAssignment = file.permissionAssignments[k];
-        permissionAssignments[permissionAssignment.role] = permissionAssignment;
-    }
+    var permissionAssignments = file.permissionAssignments;
 
     // inherited permissions
     for(roleId in permissionAssignments){
-        var permissionAssignment = permissionAssignments[roleId];
-        permissionAssignment.permissions = inheritedPermissions(roleId);
+        permissionAssignments[roleId] = inheritedPermissions(roleId);
     }
     return permissionAssignments;
+}
+
+function extend(obj1, obj2){
+    for(prop in obj2){
+        if(obj2.hasOwnProperty(prop)){
+            obj1[prop] = obj2[prop];
+        }
+    }
+}
+
+function extractUsers(file){
+    users = file.users;
+
+    for(userId in users){
+        users[userId].resources = {};
+        for(i in userAssignments[userId]){
+            var roleId= userAssignments[userId][i];
+            for(j in permissionAssignments[roleId]){
+                var permissionId = permissionAssignments[roleId][j];
+                extend(users[userId].resources, permissions[permissionId].resources);
+            }
+        }
+    }
+
+    return users;
 }
 
 
@@ -101,11 +89,11 @@ module.exports.loadPolicy = function(path){
     var file = JSON.parse(fs.readFileSync(path)); // Sync because we need all policies loaded b4 continuing.
 
     // extraction
-    roles = extractIndexedRoles(file);
-    users = extractIndexedUsers(file);
-    permissions = extractIndexedPermissions(file);
-    userAssignments = extractIndexedUserAssignments(file);
-    permissionAssignments = extractIndexedPermissionAssignments(file, roles);
+    roles = file.roles;
+    permissions = file.permissions;
+    userAssignments = file.userAssignments;
+    permissionAssignments = extractPermissionAssignments(file);
+    users = extractUsers(file);
 };
 
 /**
@@ -114,21 +102,11 @@ module.exports.loadPolicy = function(path){
  * @param resource
  */
 module.exports.canAccess = function(user, operation, resource){
-    if(userAssignments[user] != undefined){
-        for(i in userAssignments[user].roles){
-
-            var role = userAssignments[user].roles[i];
-            for(j in permissionAssignments[role].permissions){
-
-                var permission = permissionAssignments[role].permissions[j];
-                for(k in permissions[permission].resources){
-
-                    var res =  permissions[permission].resources[k];
-                    if(res.resource == resource && res.operation == operation){
-                        return true;
-                    }
-                }
-            }
+    if(users[user] != undefined && userAssignments[user] != undefined){
+        for(i in users[user].resources[resource]){
+            var operationId = users[user].resources[resource][i];
+            if(operationId == operation)
+                return true;
         }
     }
     return false;

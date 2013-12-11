@@ -1,52 +1,54 @@
 {
-    "roles": [
-        {
-            "id": "admin",
+    "roles": {
+        "admin": {
             "description": "System administrator",
             "juniorRoles": ["auth"]
         },
-        {
-            "id": "auth",
+        "auth": {
             "description": "Regular registered user",
             "juniorRoles": ["visitor"]
         },
-        {
-            "id": "visitor",
+        "visitor": {
             "description": "Visitor",
             "juniorRoles": []
         }
-    ],
-    "users": [
-        {"id": "ana", "name": "Ana Maria"},
-        {"id": "joana", "name": "Joana Maria"},
-        {"id": "mariana", "name": "Mariana Maria"},
-        {"id": "patricia", "name": "Patrícia Maria"},
-        {"id": "unknown", "name": "An unknown user"}
-    ],
-    "permissions": [
-        {
-            "id": "authPages",
-            "resources": [{"resource": "index.js", "operation": "GET"}, {"resource": "profile.js", "operation": "GET"}]
+    },
+    "users": {
+        "ana": {"name": "Ana Maria"},
+        "joana": {"name": "Joana Maria"},
+        "mariana": {"name": "Mariana Maria"},
+        "patricia": {"name": "Patrícia Maria"},
+        "unknown": {"name": "An unknown user"}
+    },
+    "permissions": {
+        "authPages": {
+            "description": "Autheticated resources",
+            "resources": {
+                "index.js": ["GET"],
+                "profile.js": ["GET"]
+            }
         },
-        {
-            "id": "adminPages",
-            "resources": [{"resource": "addUsers.js", "operation": "GET"}, {"resource": "addUsers.js", "operation": "POST"}]
+        "adminPages": {
+            "resources": {
+                "addUsers.js": ["GET", "POST"]
+            }
         },
-        {
-            "id": "registerPage",
-            "resources": [{"resource": "auth.js", "operation": "GET"}]
+        "registerPage": {
+            "resources": {
+                "auth.js": ["GET"]
+            }
         }
-    ],
-    "userAssignments": [
-        {"user": "ana", "roles": ["admin"]},
-        {"user": "joana", "roles": ["admin"]},
-        {"user": "mariana", "roles": ["auth"]},
-        {"user": "patricia", "roles": ["auth"]},
-        {"user": "unknown", "roles": ["visitor"]}
-    ],
-    "permissionAssignments": [
-        {"role": "admin", "permissions": ["adminPages"]},
-        {"role": "auth", "permissions": ["authPages"]},
-        {"role": "visitor", "permissions": ["registerPage"]}
-    ]
+    },
+    "userAssignments": {
+        "ana": ["admin"],
+        "joana": ["admin"],
+        "mariana": ["auth"],
+        "patricia": ["auth"],
+        "unknown": ["visitor"]
+    },
+    "permissionAssignments": {
+        "admin": ["adminPages"],
+        "auth": ["authPages"],
+        "visitor": ["registerPage"]
+    }
 }
